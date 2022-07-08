@@ -78,6 +78,7 @@ def check_multiple_andors(scenario):
     
     
 def check_and_after_given(scenario):
+    #check if there are no AND or OR after the given. This is bad practise as the starting point should be crisp and clear
     lines = re.split("\(\d*\)",scenario)
     given = False
     for l in lines:
@@ -92,7 +93,13 @@ def check_and_after_given(scenario):
             given = True
 
 def check_single_example(scenario):
-    pass
+    #checks if the example indeed contain more than one. Else it throws a warning
+    if "examples" in str.lower(scenario):
+        examples = str.lower(scenario).split("examples:")[1]
+        exampelines = re.split("\(\d*\)",examples)
+        if len(exampelines) <= 3:
+            line_number = scenario.split(" ")[1]
+            warnings.append('[WARNING] ' + str(line_number) + " Scenario outline contains only one example. Add more or change to scenario")
 
 def check_user_reference(scenario):
     pass

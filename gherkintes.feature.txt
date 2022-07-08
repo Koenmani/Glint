@@ -44,7 +44,6 @@ Then i expect this to warn me
 And pass me a warning
 	Examples:
 	|one|
-	|one|
 
 Given i have a cool gherkin quality checker
 When i parse this file
