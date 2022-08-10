@@ -53,3 +53,8 @@ Given i have a cool gherkin quality checker
 When i write my gherkin as pseudo code
 And x = 3
 Then i expect this to warn me
+
+Given the administrator logs in to the system
+When he enters the administration panel
+And presses delete all users
+Then i expect no users in the system anymore

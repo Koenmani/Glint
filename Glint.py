@@ -18,6 +18,7 @@ def parse_scenarios(input):
             scenarios.append(single_line)
             single_line = ''
             when = False
+            linecount+=1
         else:
             #append the current line to the single line
             #including the line numer in []
@@ -102,10 +103,21 @@ def check_single_example(scenario):
             warnings.append('[WARNING] ' + str(line_number) + " Scenario outline contains only one example. Add more or change to scenario")
 
 def check_user_reference(scenario):
-    pass
+    #check and warns if the description is mostly referring to me, myself and i rather than and actor (end-user or stakeholder)
+    #given i ...
+    #when i
+    x = re.findall(" i *| me *| we *|",str.lower(scenario))
+    if x:
+        line_number = scenario.split(" ")[1]
+        debuglog(scenario)
+        warnings.append('[WARNING] ' + str(line_number) + " It is generally bad practise to refer to yourself in BDD. Refer to an actor.")
 
 def check_pseudo_code(scenario):
-    pass
+    x = re.findall("-|\+|\*|\/|=",str.lower(scenario))
+    if x:
+        line_number = scenario.split(" ")[1]
+        debuglog(scenario)
+        warnings.append('[WARNING] ' + str(line_number) + " Usage of +-\/= indicates pseudo code. Reformulate it to better BDD")
 
 ####imports####
 import sys
