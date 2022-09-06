@@ -123,6 +123,7 @@ def check_pseudo_code(scenario):
 import sys
 import getopt
 import re
+import json
 
 ####global variables####
 warnings = []
@@ -140,36 +141,42 @@ if __name__ == "__main__":
     for opt, arg in opts:
         if opt == '-h':
             print('python glint.py -m <mode> -i <inputfile>')
-            print('     Mode can be either file or api')
-            print('     In case of file, you will need to specify -i with the full path to the file you want to parse')
+            print('     Mode can be either file, object or api')
+            print('     In case of mode file, you will need to specify -i with the full path to the file you want to parse')
+            print('     In case of mode object, you will need to specify -i the json formatted object you wish to parse')
             print('     -v for verbose logging')
             sys.exit()
         elif opt in ("-m", "--mode"):
-            mode = arg
+            mode = arg.strip()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
         elif opt in ("-v", "--verbose"):
             debug = True
     
-    if mode == 'file':
-        debuglog('Running in mode: file')
-        try:
-            scenarios = read_feature_file(inputfile)
-            debuglog('%s lines from scenarios read into memory' % (len(scenarios),))
-        except:
-            print('Can not read inputfile, please run python glint.py -h for help')
+    if mode == 'file' or mode == 'object':
+        debuglog('Running in mode: %s' % (mode,))
+        if mode == 'file':
+            try:
+                scenarios = read_feature_file(inputfile)
+                debuglog('%s lines from scenarios read into memory' % (len(scenarios),))
+            except:
+                print('Can not read inputfile, please run python glint.py -h for help')
+            single_line_scenarios = parse_scenarios(scenarios)
+        else:
+            single_line_scenarios = json.loads(inputfile)
         
-        single_line_scenarios = parse_scenarios(scenarios)
+        
         debuglog('%s scenarios read into memory' % (len(single_line_scenarios),))
 
         for s in single_line_scenarios:
-            parse_quality_checks(s)
+            if len(s.strip())>0:
+                parse_quality_checks(s)
 
     elif mode == 'api':
         #start a flask app to listen to input
         pass
     else:
-        print('Invalid mode, please run python glint.py -h for help')
+        print('Invalid mode: %s, please run python glint.py -h for help' % (mode,))
     
     #calculate score
     score = round((len(single_line_scenarios) - (len(warnings)*0.5) - len(errors)) / len(single_line_scenarios)*100,0) 
